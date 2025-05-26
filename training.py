@@ -1221,5 +1221,4 @@ def menu_investor(username):
         else:
             print("Pilihan tidak valid.")
 
-if __name__ == "__main__":
-    main()
+main()
