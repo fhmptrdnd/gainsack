@@ -1,1 +1,2 @@
-GainSack
+# GainSack
+GainSack merupakan sebuah sistem untuk mempermudah investor dan perusahaan untuk membuat kesepakatan bisnis. Di sisi investor untuk mencari keuntungan sebaik mungkin sesuai modalnya, di sisi perusahaan untuk mempermudah mencari investor bagi perusahaannya. Dengan tujuan mencari keuntungan di kedua belah pihak yang membuat sisi investor bisa mendapatkan untung dari modal dan kurun waktu yang ditentukan dengan maksimal serta optimal, di sisi perusahaan sendiri dapat meminimalisir kekurangan dana untuk pengembangan perusahaannya sehingga bisa menghasilkan profit bagi perusahaannya.
