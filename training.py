@@ -1066,7 +1066,7 @@ def menu_urutkan_proposal(proposals, title):
         for proposal in sorted_proposals:
             tampilkan_proposal(proposal)
             print("-" * 70)
-            input()
+        input()
 
 def main():
     while True:
