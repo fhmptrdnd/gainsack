@@ -978,22 +978,32 @@ def cari_proposal(proposals, nama_perusahaan):
     return [p for p in proposals if nama_perusahaan.lower() in p["NAMA PERUSAHAAN"].lower()]
 
 def knapsack_proposal(proposals, modal_investor):
-    n = len(proposals)
-    dp = [[0 for _ in range(int(modal_investor) + 1)] for _ in range(n + 1)]
-    keep = [[[] for _ in range(int(modal_investor) + 1)] for _ in range(n + 1)]
+    proposal_rasio = []  # Buat daftar proposal dengan rasio laba/biaya
+    for proposal in proposals:
+        biaya_original = proposal["BIAYA AWAL"]
+        laba_original = proposal["TOTAL LABA INVESTOR"]
+        # Gunakan nilai yang dimodifikasi untuk rasio
+        biaya = biaya_original - 1000000
+        laba = laba_original - 1000000
+        # Hindari pembagian dengan nol dan biaya negatif
+        rasio = laba / biaya if biaya > 0 else float('-inf')  # Prioritaskan biaya nol/negatif ke belakang
+        proposal_rasio.append((rasio, biaya_original, laba_original, proposal))
+    
+    # Urutkan berdasarkan rasio saja
+    proposal_rasio.sort(key=lambda x: x[0], reverse=True)
+    
+    laba_maks = 0
+    proposal_diambil = []
+    sisa_modal = modal_investor
 
-    for i in range(1, n + 1):
-        for w in range(int(modal_investor) + 1):
-            dp[i][w] = dp[i-1][w]
-            keep[i][w] = keep[i-1][w].copy()
-            
-            biaya = int(proposals[i-1]["BIAYA AWAL"])
-            laba = proposals[i-1]["TOTAL LABA INVESTOR"]
-            if biaya <= w and laba + dp[i-1][w - biaya] > dp[i-1][w]:
-                dp[i][w] = laba + dp[i-1][w - biaya]
-                keep[i][w] = keep[i-1][w - biaya] + [proposals[i-1]]
-
-    return dp[n][int(modal_investor)], keep[n][int(modal_investor)]
+    # Pilih proposal berdasarkan rasio tertinggi, gunakan biaya_original
+    for _, biaya, laba, proposal in proposal_rasio:
+        if biaya <= sisa_modal:
+            laba_maks += laba
+            proposal_diambil.append(proposal)
+            sisa_modal -= biaya
+    
+    return laba_maks, proposal_diambil
 
 def tampilkan_menu_pengusaha():
     print("\nMenu Pengusaha:")
@@ -1202,15 +1212,14 @@ def menu_investor(username):
                     continue
                 
                 laba_maks, proposal_diambil = knapsack_proposal(proposals, modal_investor)
-                print(f"\nHasil Optimasi Investasi (Knapsack):")
+                print(f"\nHasil Optimasi Investasi:")
                 print(f"Total Laba Investor Maksimal: Rp {laba_maks:,.0f}")
                 total_modal = sum(p["BIAYA AWAL"] for p in proposal_diambil)
                 print(f"Total Modal Digunakan: Rp {total_modal:,.0f}")
                 if not proposal_diambil:
                     print("Tidak ada proposal yang dapat dipilih dengan modal tersebut.")
-                    input()
                 else:
-                    print("Proposal yang dapat Dipilih:")
+                    print("Proposal yang Dipilih:")
                     for proposal in proposal_diambil:
                         print(f"- {proposal['JUDUL PROYEK']} ({proposal['NAMA PERUSAHAAN']}):")
                         print(f"  Biaya Awal: Rp {proposal['BIAYA AWAL']:,.0f}")
