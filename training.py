@@ -1,6 +1,6 @@
 #==========================================|Training 4|==========================================
 import csv
-import heapq
+from my_heap import build_heap, heappop
 
 def input_proposal(nama_perusahaan):
     print("Masukkan data untuk proposal investasi:")
@@ -154,19 +154,20 @@ def log_in():
     print("Username atau password salah.")
     return None
 
-def heap_sort_proposal(proposals, key, ascending=False):
+def heap_sort_proposal(proposals, key, ascending):
     if ascending:
         heap = [(proposal[key], proposal["NAMA PERUSAHAAN"], i, proposal) for i, proposal in enumerate(proposals)]
     else:
         heap = [(-proposal[key], proposal["NAMA PERUSAHAAN"], i, proposal) for i, proposal in enumerate(proposals)]
-    
-    heapq.heapify(heap)
-    
+
+
+    build_heap(heap)
+
     sorted_proposals = []
     while heap:
-        _, _, _, proposal = heapq.heappop(heap)
+        _, _, _, proposal = heappop(heap)
         sorted_proposals.append(proposal)
-    
+
     return sorted_proposals
 
 def cari_proposal(proposals, nama_perusahaan):
@@ -254,14 +255,16 @@ def menu_urutkan_proposal(proposals, title):
         ascending = False
         if pilihan == 1:
             key = "ROI INVESTOR"
+            ascending = True
         elif pilihan == 2:
             key = "BIAYA AWAL"
-            ascending = True
+            ascending = False
         elif pilihan == 3:
             key = "PAYBACK INVESTOR"
-            ascending = True
+            ascending = False
         elif pilihan == 4:
             key = "PERSENTASE INVESTOR"
+            ascending = True
         else:
             print("Pilihan tidak valid.")
             continue
