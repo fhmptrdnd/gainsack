@@ -17,7 +17,7 @@ def menu_urutkan_proposal(proposals, title):
         if pilihan is None:
             input("Tekan Enter untuk coba lagi...")
             continue
-        if pilihan == 5:
+        if pilihan == 6:
             break
         
         key = None
@@ -32,6 +32,10 @@ def menu_urutkan_proposal(proposals, title):
             ascending = True
         elif pilihan == 4:
             key = "PERSENTASE INVESTOR"
+            ascending = False
+        elif pilihan == 5:
+            key = "TANGGAL INPUT"
+            ascending = True
         else:
             print("Pilihan tidak valid.")
             input("Tekan Enter untuk kembali...")
@@ -65,14 +69,29 @@ def menu_pengusaha(username):
             proposal_utils.simpan_ke_csv_proposal([proposal])
             print("\nProposal berhasil ditambahkan!")
             input("Tekan Enter untuk kembali ke menu...")
+        # elif pilihan == 2:
+        #     clear_screen()
+        #     if not my_proposals:
+        #         print("Belum ada proposal yang Anda masukkan.")
+        #     else:
+        #         print("\nDaftar Proposal Anda:")
+        #         tampilkan = proposal_utils.baca_dari_csv_proposal()
+        #         if tampilkan:
+        #             my_proposals = tampilkan[:3]
+        #             for proposal in my_proposals:
+        #                 proposal_utils.tampilkan_proposal(proposal)
+        #                 # menu_urutkan_proposal(my_proposals, "Daftar Proposal Anda")
+        #                 print("-" * 70)
+        #     input("\nTekan Enter untuk kembali ke menu...")
         elif pilihan == 2:
             clear_screen()
             if not my_proposals:
                 print("Belum ada proposal yang Anda masukkan.")
             else:
                 print("\nDaftar Proposal Anda:")
-                for proposal in my_proposals:
+                for proposal in my_proposals[:3]:
                     proposal_utils.tampilkan_proposal(proposal)
+                    # menu_urutkan_proposal(my_proposals, "Daftar Proposal Anda")
                     print("-" * 70)
             input("\nTekan Enter untuk kembali ke menu...")
         elif pilihan == 3:

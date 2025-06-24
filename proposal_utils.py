@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 
 def validasi_input(prompt, tipe_data_tujuan, kondisi_valid=lambda x: True, error_message="Input tidak valid."):
     while True:
@@ -15,12 +16,21 @@ def input_proposal(nama_perusahaan):
     print("Masukkan data untuk proposal investasi:")
     
     judul_proyek = input("Judul proyek: ")
-    biaya_awal = validasi_input(
-        "Biaya investasi awal (Rp): ", float, lambda x: x > 0, "Biaya investasi harus lebih dari nol."
-    )
     pendapatan_tahunan = validasi_input(
         "Pendapatan tahunan (Rp): ", float, lambda x: x >= 0, "Pendapatan tidak boleh negatif."
     )
+    # batas = validasi_input(
+    #     "Biaya investasi awal (Rp): ", float, lambda x: x > 0, "Biaya investasi harus lebih dari 0."
+    # )
+    # if batas <= pendapatan_tahunan * 5:
+    #     batas = pendapatan_tahunan * 5
+    #     print("Biaya investasi harus lima kali lipat dari penghasilan.")
+    #     print("Biaya investasi yang disesuaikan:", batas)
+    # else:
+    #     batas = batas
+        
+    batas = validasi_input(
+        "Biaya investasi awal (Rp): ", float,  lambda x: x > 0, "Biaya investasi harus lebih dari 0.")
     pengeluaran_tahunan = validasi_input(
         "Pengeluaran tahunan (Rp): ", float, lambda x: x >= 0, "Pengeluaran tidak boleh negatif."
     )
@@ -30,22 +40,24 @@ def input_proposal(nama_perusahaan):
     persentase_investor = validasi_input(
         "Persentase keuntungan untuk investor (%): ", float, lambda x: 0 < x <= 100, "Persentase harus di antara 0 dan 100."
     )
+        
 
     laba_bersih_tahunan = pendapatan_tahunan - pengeluaran_tahunan
     total_laba_bersih = laba_bersih_tahunan * durasi_tahun
-    untung_bersih = total_laba_bersih - biaya_awal
-    roi = (untung_bersih / biaya_awal) * 100 if biaya_awal != 0 else 0
-    payback_period = biaya_awal / laba_bersih_tahunan if laba_bersih_tahunan != 0 else float('inf')
+    untung_bersih = total_laba_bersih - batas
+    roi = (untung_bersih / batas) * 100 if batas != 0 else 0
+    payback_period = batas / laba_bersih_tahunan if laba_bersih_tahunan != 0 else float('inf')
 
     laba_investor_tahunan = laba_bersih_tahunan * (persentase_investor / 100)
     total_laba_investor = laba_investor_tahunan * durasi_tahun
-    roi_investor = (total_laba_investor / biaya_awal) * 100 if biaya_awal != 0 else 0
-    payback_investor = biaya_awal / laba_investor_tahunan if laba_investor_tahunan != 0 else float('inf')
+    roi_investor = (total_laba_investor / batas) * 100 if batas != 0 else 0
+    payback_investor = batas / laba_investor_tahunan if laba_investor_tahunan != 0 else float('inf')
+    tanggal_input = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     return {
         "JUDUL PROYEK": judul_proyek,
         "NAMA PERUSAHAAN": nama_perusahaan,
-        "BIAYA AWAL": biaya_awal,
+        "BIAYA AWAL": batas,
         "LABA BERSIH TAHUNAN": laba_bersih_tahunan,
         "TOTAL LABA BERSIH": total_laba_bersih,
         "UNTUNG BERSIH": untung_bersih,
@@ -56,7 +68,8 @@ def input_proposal(nama_perusahaan):
         "LABA INVESTOR TAHUNAN": laba_investor_tahunan,
         "TOTAL LABA INVESTOR": total_laba_investor,
         "ROI INVESTOR": roi_investor,
-        "PAYBACK INVESTOR": payback_investor
+        "PAYBACK INVESTOR": payback_investor,
+        "TANGGAL INPUT": tanggal_input
     }
 
 def tampilkan_proposal(proposal):
@@ -75,13 +88,14 @@ def tampilkan_proposal(proposal):
     print(f"{'Total Laba Investor':<{label_width}}: Rp {proposal['TOTAL LABA INVESTOR']:,.0f}")
     print(f"{'ROI Investor':<{label_width}}: {proposal['ROI INVESTOR']:.2f}%")
     print(f"{'Payback Period untuk Investor':<{label_width}}: {proposal['PAYBACK INVESTOR']:.2f} tahun")
+    print(f"{'Tanggal Input':<{label_width}}: {proposal['TANGGAL INPUT']}")
 
 def simpan_ke_csv_proposal(daftar_proposal, filename="training_proposal.csv"):
     headers = [
         "JUDUL PROYEK", "NAMA PERUSAHAAN", "BIAYA AWAL", "LABA BERSIH TAHUNAN",
         "TOTAL LABA BERSIH", "UNTUNG BERSIH", "ROI PERUSAHAAN", "PAYBACK PERIOD",
         "DURASI INVESTASI", "PERSENTASE INVESTOR", "LABA INVESTOR TAHUNAN",
-        "TOTAL LABA INVESTOR", "ROI INVESTOR", "PAYBACK INVESTOR"
+        "TOTAL LABA INVESTOR", "ROI INVESTOR", "PAYBACK INVESTOR", "TANGGAL INPUT"
     ]
     
     with open(filename, mode='a', newline='', encoding='utf-8') as file:
@@ -98,7 +112,6 @@ def baca_dari_csv_proposal(filename="training_proposal.csv"):
             data = []
             for i, row in enumerate(reader, 1):
                 try:
-                    # Konversi tipe data dilakukan di dalam blok try
                     row["BIAYA AWAL"] = float(row["BIAYA AWAL"])
                     row["LABA BERSIH TAHUNAN"] = float(row["LABA BERSIH TAHUNAN"])
                     row["TOTAL LABA BERSIH"] = float(row["TOTAL LABA BERSIH"])
@@ -111,6 +124,7 @@ def baca_dari_csv_proposal(filename="training_proposal.csv"):
                     row["TOTAL LABA INVESTOR"] = float(row["TOTAL LABA INVESTOR"])
                     row["ROI INVESTOR"] = float(row["ROI INVESTOR"])
                     row["PAYBACK INVESTOR"] = float(row["PAYBACK INVESTOR"])
+                    row["TANGGAL INPUT"] = datetime.strptime(row["TANGGAL INPUT"], "%Y-%m-%d %H:%M:%S")
                     data.append(row)
                 except (ValueError, TypeError, KeyError) as e:
                     print(f"\nPeringatan: Melewati baris ke-{i} di file '{filename}' karena ada data yang tidak valid atau hilang. ({e})")
